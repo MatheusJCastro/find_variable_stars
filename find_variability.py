@@ -142,7 +142,7 @@ def eta_method(data, weight=None):
 
         mean_square = 0
         for j in range(data_len):  # find mean square successive difference
-            mean_square += (data[i][1][j+1]*weight[i][j+1] - data[i][1][j]*weight[i][j]) ** 2 / data_len
+            mean_square += (weight[i][j+1]*(data[i][1][j+1] - data[i][1][j])) ** 2 / data_len
 
         # if data_len != 0:
         #    var = 0
