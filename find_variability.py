@@ -115,7 +115,8 @@ def iqr_method(data, weight=None):
     for i in data.keys():
         data_len = len(data[i][1])
         if data_len != 1:
-            data_of_interest = np.sort(data[i][1]*weight[i])[data_len//4:-data_len//4]  # Exclude the 25% lower and highest values
+            # Exclude the 25% lower and highest values
+            data_of_interest = np.sort(data[i][1]*weight[i])[data_len//4:-data_len//4]
         else:
             data_of_interest = data[i][1]
 
@@ -163,7 +164,7 @@ def error_weights(data):
     # Create a sequence of lists using the data magnitude error
     weights = {}
     for i in data.keys():
-        weights[i] = np.array(data[i][2])
+        weights[i] = 1/np.array(data[i][2]) ** 2
 
     return weights
 
