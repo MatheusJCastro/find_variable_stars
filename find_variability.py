@@ -180,7 +180,8 @@ def time_weights(data, threshold=5):  # threshold defined in minutes
             if diff <= threshold:
                 filter_weights.append(1)
             else:
-                filter_weights.append(1/diff)
+                diff = diff*24
+                filter_weights.append(1/(1+diff))
         weights[i] = np.array(filter_weights)
 
     return weights
