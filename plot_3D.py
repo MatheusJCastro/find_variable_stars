@@ -43,9 +43,12 @@ def plot_3d(data, fl_name, show=False):
     fig = plt.figure(figsize=(16, 9))
     ax = fig.add_subplot(111, projection='3d')
 
-    ax.set_xlabel('Time (HDJ)')
-    ax.set_zlabel('DMAG')
-    ax.set_ylabel('Filter')
+    plt.rc('axes', titlesize=24)
+
+    ax.set_title("Plot of {}\n".format(fl_name.split("/")[1]))
+    ax.set_xlabel("Time (HDJ)")
+    ax.set_zlabel("DMAG")
+    ax.set_ylabel("Filter")
     ax.set_yticklabels([])
 
     time_values = np.array([])
@@ -69,10 +72,34 @@ def plot_3d(data, fl_name, show=False):
     plt.close()
 
 
-def create_dir(dir_name, fl_name):
-    if not os.path.isdir("plots_" + dir_name):
-        os.mkdir("plots_" + dir_name)
-    return "plots_" + fl_name[:-4]
+def plot_2d(data, fl_name, show=False):
+    plt.figure(figsize=(16, 9))
+
+    plt.title("Plot of {}\n".format(fl_name.split("/")[1]))
+    plt.xlabel("Time (HDJ)")
+    plt.ylabel("DMAG")
+
+    for i in data.keys():
+        plt.plot(data[i].T[0], data[i].T[1], ".", label=i)
+
+    plt.grid()
+    plt.legend()
+    plt.savefig("{}.jpg".format(fl_name))
+    if show:
+        plt.show()
+    plt.close()
+
+
+def create_dir_3d(dir_name, fl_name):
+    if not os.path.isdir("plots3d_" + dir_name):
+        os.mkdir("plots3d_" + dir_name)
+    return "plots3d_" + fl_name[:-4]
+
+
+def create_dir_2d(dir_name, fl_name):
+    if not os.path.isdir("plots2d_" + dir_name):
+        os.mkdir("plots2d_" + dir_name)
+    return "plots2d_" + fl_name[:-4]
 
 
 def find_args(args):
@@ -105,8 +132,12 @@ def main(args):
 
     for fl_name in fls_names:
         data = open_fl(fl_name)
-        fl_name = create_dir(direc, fl_name)
-        plot_3d(data, fl_name, show=show)
+
+        fl_name3d = create_dir_3d(direc, fl_name)
+        plot_3d(data, fl_name3d, show=show)
+
+        fl_name2d = create_dir_2d(direc, fl_name)
+        plot_2d(data, fl_name2d, show=show)
 
 
 if __name__ == '__main__':
