@@ -74,13 +74,14 @@ def plot_3d(data, fl_name, show=False):
 
 def plot_2d(data, fl_name, show=False):
     plt.figure(figsize=(16, 9))
+    plt.rc("font", size=18)
 
     plt.title("Plot of {}\n".format(fl_name.split("/")[1]))
     plt.xlabel("Time (HDJ)")
     plt.ylabel("DMAG")
 
     for i in data.keys():
-        plt.plot(data[i].T[0], data[i].T[1], ".", label=i)
+        plt.errorbar(data[i].T[0], data[i].T[1], yerr=data[i].T[2], fmt=".", label=i, markersize=10)
 
     plt.grid()
     plt.legend()
