@@ -141,21 +141,34 @@ def eta_method(data, weight=None):
     for i in data.keys():
         data_len = len(data[i][1])-1
 
+        if data_len == 0:
+            eta[i] = np.nan
+            continue
+
         mean_square = 0
+        wsum = 0
         for j in range(data_len):  # find mean square successive difference
-            mean_square += (weight[i][j+1]*(data[i][1][j+1] - data[i][1][j])) ** 2 / data_len
+            # Weights associated with the magnitude errors
+            wmagj = 1 / (data[i][2][j + 1] ** 2 + data[i][2][j] ** 2)
 
-        # if data_len != 0:
-        #    var = 0
-        #    for j in range(data_len+1):  # find variance manually
-        #        var += (data[i][1][j] - np.mean(data[i][1]))**2 / data_len
+            mean_square += (weight[i][j + 1] * wmagj) * (data[i][1][j + 1] - data[i][1][j]) ** 2
+            # Sum of the weights
+            wsum += weight[i][j + 1] * wmagj
+        wmean_square = (mean_square / wsum) / data_len
 
-        var = np.std(data[i][1]*weight[i])**2  # find the variance
+        var = 0
+        wsum2 = 0
+        for j in range(data_len+1):  # find variance manually
+            # Weights associated with the magnitude error
+            wmagj2 = 1. / (data[i][2][j] ** 2)
+            var += wmagj2*(data[i][1][j] - np.mean(data[i][1]))**2
+            wsum2 += wmagj2
+        var = (var / wsum2) / data_len
 
         if var != 0:
             eta[i] = var/mean_square
         else:
-            eta[i] = 0
+            eta[i] = np.nan
 
     return eta
 
@@ -169,7 +182,7 @@ def error_weights(data):
     return weights
 
 
-def time_weights(data, threshold=5):  # threshold defined in minutes
+def time_weights(data, threshold=30):  # threshold defined in minutes
     # Find time weights for the data based on when the image was taken
     threshold = threshold/1440  # transform to day
 
