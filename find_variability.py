@@ -154,7 +154,7 @@ def eta_method(data, weight=None):
             mean_square += (weight[i][j + 1] * wmagj) * (data[i][1][j + 1] - data[i][1][j]) ** 2
             # Sum of the weights
             wsum += weight[i][j + 1] * wmagj
-        wmean_square = (mean_square / wsum) / data_len
+        mean_square = (mean_square / wsum) / data_len
 
         var = 0
         wsum2 = 0
@@ -171,6 +171,10 @@ def eta_method(data, weight=None):
             eta[i] = np.nan
 
     return eta
+
+
+# def sigmaw_method(data):
+#     print(data)
 
 
 def error_weights(data):
@@ -213,9 +217,11 @@ def main(dir_name):
         iqr_results_weighted = iqr_method(data, weight=error_weights(data))
         eta_results = eta_method(data)
         eta_results_weighted = eta_method(data, weight=time_weights(data))
+        # sigmaw_method(data)
+        # break
 
         save_results(iqr_results, iqr_results_weighted, eta_results, eta_results_weighted, dir_name, fl_name)
-        # plot_data(data)
+        plot_data(data)
 
 
 if __name__ == '__main__':
