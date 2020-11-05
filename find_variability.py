@@ -80,26 +80,18 @@ def plot_data(data, show=False):
     plt.close()
 
 
-def save_results(iqr, iqr_weight, eta, eta_weight, dir_name, fl_name):
+def save_results(results, dir_name, fl_name):
     if not os.path.isdir("results_" + dir_name):
         os.mkdir("results_" + dir_name)
     fl_name = "results_" + fl_name
 
-    iqr = np.array(list(iqr.items()))
-    iqr_weight = np.array(list(iqr_weight.items()))
-    eta = np.array(list(eta.items()))
-    eta_weight = np.array(list(eta_weight.items()))
-
     save = "Method, Filter, Result\n"
 
-    for i in range(len(iqr)):
-        save += "IQR, {}, {}\n".format(iqr[i][0], iqr[i][1])
-    for i in range(len(iqr_weight)):
-        save += "IQR Weighted, {}, {}\n".format(iqr_weight[i][0], iqr_weight[i][1])
-    for i in range(len(eta)):
-        save += "ETA, {}, {}\n".format(eta[i][0], eta[i][1])
-    for i in range(len(iqr_weight)):
-        save += "ETA Weighted, {}, {}\n".format(eta_weight[i][0], eta_weight[i][1])
+    for method in results.keys():
+        result_meth = np.array(list(results[method].items()))
+
+        for i in range(len(result_meth)):
+            save += "{}, {}, {}\n".format(method, result_meth[i][0], result_meth[i][1])
 
     np.savetxt(fl_name, [save], fmt="%s")
 
@@ -165,16 +157,83 @@ def eta_method(data, weight=None):
             wsum2 += wmagj2
         var = (var / wsum2) / data_len
 
-        if var != 0:
-            eta[i] = var/mean_square
-        else:
+        if mean_square == 0:
             eta[i] = np.nan
+        else:
+            eta[i] = var/mean_square
+
 
     return eta
 
 
-# def sigmaw_method(data):
-#     print(data)
+def sigmaw_method(data, weights):
+    sigmaw = {}
+    for i in data.keys():
+        wsum = np.sum(weights[i])
+        wsum_squared = np.sum(weights[i] ** 2)
+        mean = np.mean(data[i][1])
+
+        sum_result = np.sum(weights[i] * (data[i][1] - mean) ** 2)
+
+        if (wsum ** 2 - wsum_squared) == 0:
+            sigmaw[i] = np.nan
+        else:
+            sigmaw[i] = np.sqrt((wsum / (wsum ** 2 - wsum_squared)) * sum_result)
+
+    return sigmaw
+
+
+def mad_method(data):
+    mad = {}
+    for i in data.keys():
+        mad[i] = np.mean(np.abs(data[i][1] - np.mean(data[i][1])))
+
+    return mad
+
+
+def excess_variance_method(data):
+    var_nxs = {}
+    for i in data.keys():
+        overall_mean = np.mean(data[i][1])
+
+        if overall_mean == 0:
+            var_nxs[i] = np.nan
+        else:
+            sum_result = np.sum((data[i][1] - overall_mean) ** 2 - np.power(data[i][2], 2))
+            var_nxs[i] = (1 / (len(data[i][1]) * overall_mean**2)) * sum_result
+
+    return var_nxs
+
+
+def peak_to_peak_method(data):
+    nu = {}
+    for i in data.keys():
+        max_diff = max(np.array(data[i][1]) - np.array(data[i][2]))
+        min_diff = min(np.array(data[i][1]) + np.array(data[i][2]))
+
+        if (max_diff + min_diff) == 0:
+            nu[i] = np.nan
+        else:
+            nu[i] = (max_diff - min_diff) / (max_diff + min_diff)
+
+    return nu
+
+
+def lag_1_method(data):
+    lag = {}
+    for i in data.keys():
+        overall_mean = np.mean(data[i][1])
+
+        sum_result = 0
+        for j in range(len(data[i][1]) - 1):
+            sum_result += (data[i][1][j] - overall_mean) * (data[i][1][j+1] - overall_mean)
+
+        if np.sum(data[i][1] - overall_mean) == 0:
+            lag[i] = np.nan
+        else:
+            lag[i] = sum_result / np.sum(data[i][1] - overall_mean)
+
+    return lag
 
 
 def error_weights(data):
@@ -209,19 +268,25 @@ def main(dir_name):
     # Main function
     fls_names = find_files(dir_name)
 
+    methods = ["IQR", "IQR Weighted", "ETA", "ETA Weighted", "Sigma Weighted", "MAD",
+               "Variance NXS", "Peak to Peak", "Lag-1 Autocorrelation"]
+    results = {}
+
     for fl_name in fls_names:
         param, data = open_data(fl_name)
         data = format_data(data)
 
-        iqr_results = iqr_method(data)
-        iqr_results_weighted = iqr_method(data, weight=error_weights(data))
-        eta_results = eta_method(data)
-        eta_results_weighted = eta_method(data, weight=time_weights(data))
-        # sigmaw_method(data)
-        # break
+        results[methods[0]] = iqr_method(data)
+        results[methods[1]] = iqr_method(data, weight=error_weights(data))
+        results[methods[2]] = eta_method(data)
+        results[methods[3]] = eta_method(data, weight=time_weights(data))
+        results[methods[4]] = sigmaw_method(data, error_weights(data))
+        results[methods[5]] = mad_method(data)
+        results[methods[6]] = excess_variance_method(data)
+        results[methods[7]] = peak_to_peak_method(data)
+        results[methods[8]] = lag_1_method(data)
 
-        save_results(iqr_results, iqr_results_weighted, eta_results, eta_results_weighted, dir_name, fl_name)
-        plot_data(data)
+        save_results(results, dir_name, fl_name)
 
 
 if __name__ == '__main__':
