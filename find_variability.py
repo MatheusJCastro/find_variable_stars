@@ -162,7 +162,6 @@ def eta_method(data, weight=None):
         else:
             eta[i] = var/mean_square
 
-
     return eta
 
 
