@@ -56,10 +56,10 @@ Peak to Peak, J0660, 2.4375000000000004
 Peak to Peak, iSDSS, -1.3255813953488376
 Peak to Peak, J0861, 4.000000000000001
 Lag-1 Autocorrelation, J0395, nan
-Lag-1 Autocorrelation, gSDSS, -751958996233332.0
-Lag-1 Autocorrelation, J0515, 154526945333150.12
+Lag-1 Autocorrelation, gSDSS, -4.562893143894671e+31
+Lag-1 Autocorrelation, J0515, -2.0245163444976752e+30
 Lag-1 Autocorrelation, rSDSS, nan
-Lag-1 Autocorrelation, J0660, 50987849522713.984
-Lag-1 Autocorrelation, iSDSS, 416296896883440.2
-Lag-1 Autocorrelation, J0861, 151088761898859.8
+Lag-1 Autocorrelation, J0660, 1.7813632784362095e+30
+Lag-1 Autocorrelation, iSDSS, -2.1816256578091696e+31
+Lag-1 Autocorrelation, J0861, -1.0887092668601194e+31
 

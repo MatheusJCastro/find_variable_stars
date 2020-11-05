@@ -231,7 +231,7 @@ def lag_1_method(data):
         if np.sum(data[i][1] - overall_mean) == 0:
             lag[i] = np.nan
         else:
-            lag[i] = sum_result / np.sum(data[i][1] - overall_mean)
+            lag[i] = sum_result / np.sum(data[i][1] - overall_mean)**2
 
     return lag
 
