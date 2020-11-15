@@ -185,7 +185,7 @@ def sigmaw_method(data, weights):
 def mad_method(data):
     mad = {}
     for i in data.keys():
-        mad[i] = np.mean(np.abs(data[i][1] - np.mean(data[i][1])))
+        mad[i] = np.median(np.abs(data[i][1] - np.median(data[i][1])))
 
     return mad
 
