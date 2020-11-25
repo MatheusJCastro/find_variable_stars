@@ -183,9 +183,10 @@ def sigmaw_method(data, weights):
 
 
 def mad_method(data):
+    gauss_factor = 1.4826
     mad = {}
     for i in data.keys():
-        mad[i] = np.median(np.abs(data[i][1] - np.median(data[i][1])))
+        mad[i] = gauss_factor*np.median(np.abs(data[i][1] - np.median(data[i][1])))
 
     return mad
 
@@ -230,7 +231,7 @@ def lag_1_method(data):
         if np.sum(data[i][1] - overall_mean) == 0:
             lag[i] = np.nan
         else:
-            lag[i] = sum_result / np.sum(data[i][1] - overall_mean)**2
+            lag[i] = sum_result / np.sum((data[i][1] - overall_mean)**2)
 
     return lag
 
