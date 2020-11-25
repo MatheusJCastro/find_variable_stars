@@ -1,8 +1,8 @@
 ###################################################
 # Find Stars Variability                          #
 # Matheus J. Castro                               #
-# Version 1.2                                     #
-# Last Modification: 09/16/2020 (month/day/year)  #
+# Version 1.2.1                                   #
+# Last Modification: 11/25/2020 (month/day/year)  #
 ###################################################
 
 import matplotlib.pyplot as plt
